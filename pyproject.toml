@@ -1,0 +1,61 @@
+[project]
+name = "keygen-python-sdk"
+version = "0.1.0"
+description = "Keygen Python SDK"
+readme = "README.md"
+authors = [
+    { name = "Marcello Massaro", email = "18736562+massarom@users.noreply.github.com" },
+]
+requires-python = ">=3.10"
+dependencies = [
+    "py-machineid>=0.6.0",
+    "pydantic-settings>=2.6.1",
+    "pydantic>=2.10.3",
+    "pynacl>=1.5.0",
+    "requests>=2.32.3",
+]
+license = { file = "LICENSE" }
+keywords = ["licensing", "keygen-sh"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: Pydantic",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Typing :: Typed",
+]
+
+[project.urls]
+Homepage = "https://pypi.org/p/keygen-python-sdk"
+Docs = "https://keygen-python-sdk.readthedocs.io/en/latest/index.html"
+Source = "https://github.com/massarom/keygen-python-sdk"
+Issues = "https://github.com/massarom/keygen-python-sdk/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "furo>=2024.8.6",
+    "mypy>=1.13.0",
+    "ruff>=0.8.1",
+    "sphinx-copybutton>=0.5.2",
+    "sphinx>=8.1.3",
+    "types-requests>=2.32.0.20241016",
+    "pre-commit>=4.0.1",
+    "sphinx-autobuild>=2024.10.3",
+    "pytest>=8.3.4",
+    "twine>=6.0.1",
+    "esbonio>=0.16.5",
+    "build>=1.2.2.post1",
+]
+
+[tool.mypy]
+plugins = ['pydantic.mypy']
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint.isort]
+known-first-party = ["keygen_python_sdk"]

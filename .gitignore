@@ -1,0 +1,26 @@
+.DS_Store
+
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+docs/_build/
+wheels/
+*.egg-info
+
+# Tooling
+*_cache
+
+# IDE stuff
+.helix/
+.idea/
+.vscode/
+.zed/
+
+# Virtual environments
+.venv
+
+# Secrets
+.env
+!.env.example
