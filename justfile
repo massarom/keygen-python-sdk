@@ -35,14 +35,6 @@ sync:
 test: sync
     uv run pytest
 
-# Build both source and wheel distribuitions
+# Build wheel distribuitions
 package: sync
     uv build --wheel
-
-# Upload the built packages to PyPI
-[confirm]
-upload: package
-    twine upload dist/*
-# Upload the built packages to Test PyPI
-upload-test: package
-    twine upload -r testpypi dist/*
