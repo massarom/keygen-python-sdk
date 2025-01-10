@@ -137,7 +137,7 @@ def create_new_user(
     email: str,
     password: str | None = None,
     auth_token: models.Token | str | None = None,
-) -> dict[str, typing.Any]:
+) -> models.User:
     """Create a new user.
 
     Args:
@@ -149,7 +149,7 @@ def create_new_user(
             the value from :attr:`.Config.auth_token` is used.
 
     Returns:
-        The response from the creation request.
+        User: A new user object after it's created on the account.
 
     Raises:
         KeygenError: If the user could not be created for some reason.
@@ -183,7 +183,7 @@ def create_new_user(
 
     if code > 300:
         raise exceptions.KeygenAPIError(resp=payload)
-    return payload
+    return models.User.from_response(payload)
 
 
 def decode_license_file(license_file: pathlib.Path | str) -> dict[str, typing.Any]:
