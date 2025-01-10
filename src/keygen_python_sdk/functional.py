@@ -226,7 +226,7 @@ def list_license_entitlements(
     lic_id: str,
     license_key: str | None = None,
     auth_token: models.Token | str | None = None,
-) -> list[dict[str, typing.Any]]:
+) -> list[models.Entitlement]:
     """List entitlements associated to a license.
 
     Args:
@@ -250,7 +250,7 @@ def list_license_entitlements(
     if "errors" in payload:
         raise exceptions.KeygenAPIError("invalid auth token", resp=payload)
 
-    return payload["data"]
+    return [models.Entitlement.from_response({"data": e}) for e in payload["data"]]
 
 
 def get_user(user_id: str, auth_token: models.Token | str | None = None) -> models.User:

@@ -198,7 +198,7 @@ class Entitlement(CamelCasedModel):
         data = cls._validate_payload_for_model(json_data)
 
         attrs = data["attributes"]
-        return cls(id=data["id"], **attrs, metadata=data.get("metadata", None))
+        return cls(id=data["id"], **attrs)
 
 
 class LicenseStatus(enum.StrEnum):
