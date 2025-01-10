@@ -38,3 +38,9 @@ test: sync
 # Build wheel distribuitions
 package: sync
     uv build --wheel
+
+# Publish a new release on GH, bumping the version and updating the changelog
+publish:
+    cz bump --git-output-to-stderr --changelog-to-stdout > .changes
+    git push --follow-tags
+    gh release create v$(cz version -p) --verify-tag -F .changes

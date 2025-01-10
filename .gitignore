@@ -11,6 +11,7 @@ wheels/
 
 # Tooling
 *_cache
+.changes
 
 # IDE stuff
 .helix/

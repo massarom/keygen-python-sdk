@@ -49,7 +49,15 @@ dev = [
     "twine>=6.0.1",
     "esbonio>=0.16.5",
     "build>=1.2.2.post1",
+    "commitizen>=4.1.0",
 ]
+
+[tool.commitizen]
+gpg_sign = true
+major_version_zero = true
+tag_format = "v$version"
+update_changelog_on_bump = true
+version_provider = "pep621"
 
 [tool.mypy]
 plugins = ['pydantic.mypy']
