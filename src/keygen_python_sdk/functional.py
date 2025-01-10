@@ -196,32 +196,6 @@ def decode_license_file(license_file: pathlib.Path | str) -> dict[str, typing.An
     )
 
 
-# def get_license_file_info(
-#     license_file: pathlib.Path | str,
-# ) -> dict[str, typing.Any]:
-#     """Get general information about a given license **file** for display purposes.
-
-#     Args:
-#         license_file: License file to analyze. If it's a :class:`pathlib.Path` type,
-#             then the file is opened, decoded, and validated. If it's a string, it's
-#             assumed to be the contents of the license file simply after being
-#             base64-decoded.
-
-#     Returns:
-#         License: The parsed object.
-
-#     Raises:
-#         InvalidLicenseError: If the license file cannot be validated.
-#     """
-#     if isinstance(license_file, str):
-#         lic = verify_local_license_file_contents(json.loads(license_file))
-#     elif isinstance(license_file, pathlib.Path):
-#         lic = verify_local_license_file(license_file)
-#     else:
-#         raise KeygenError("license file is expired or invalid")
-#     return models.License.from_response(lic)
-
-
 def list_license_entitlements(
     lic_id: str, license_key: str | None = None
 ) -> list[dict[str, typing.Any]]:
