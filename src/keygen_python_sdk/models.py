@@ -469,3 +469,13 @@ class User(CamelCasedModel):
 
         if code != 200:
             raise exceptions.KeygenAPIError("password reset failed", resp=payload)
+
+    @cached_property
+    def licenses(self):
+        """Recover all licenses of the current user."""
+        code, payload = functional.request_and_validate(f"/users/{self.id}/licenses")
+
+        if code != 200:
+            raise exceptions.KeygenAPIError("listing licenses failed.", resp=payload)
+
+        return [License.from_response(license_json) for license_json in payload["data"]]
