@@ -1,6 +1,6 @@
 [project]
 name = "keygen-python-sdk"
-version = "0.2.0"
+version = "0.3.0"
 description = "Keygen Python SDK"
 readme = "README.md"
 authors = [
