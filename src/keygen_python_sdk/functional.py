@@ -62,6 +62,18 @@ from keygen_python_sdk import models
 logger = logging.getLogger(__name__)
 
 
+def _distil_auth_token(token: models.Token | str | None = None) -> str:
+    """Helper to "distil" a usable token from multiple types."""
+    if isinstance(token, models.Token):
+        return token.token
+    elif token is None:
+        return config.auth_token
+    elif isinstance(token, str):
+        return token
+    else:
+        raise TypeError("token can only be a string, a Token object, or None")
+
+
 def _fmt_errors(req: dict[str, typing.Any]) -> list[str]:
     """Format all errors in ``req`` for display.
 
@@ -77,13 +89,20 @@ def _fmt_errors(req: dict[str, typing.Any]) -> list[str]:
     ]
 
 
-def checkout_license(license_id: str, license_key: str | None = None) -> str:
+def checkout_license(
+    license_id: str,
+    license_key: str | None = None,
+    auth_token: models.Token | str | None = None,
+) -> str:
     """Get a new license file for offline validation.
 
     Args:
         license_id: The ID of the license.
         license_key: The license key for authorization purposes. If ``None``, the
             value from :attr:`.Config.auth_token` is used.
+        auth_token: Token with the authorization to create new users. If ``None``,
+                the value from :attr:`.Config.auth_token` is used.
+
 
     Returns:
         The new license file contents.
@@ -91,7 +110,11 @@ def checkout_license(license_id: str, license_key: str | None = None) -> str:
     Raises:
         LicenseCheckoutError: If the request for the new license is invalid.
     """
-    auth = f"License {license_key}" if license_key else f"Bearer {config.auth_token}"
+    auth = (
+        f"License {license_key}"
+        if license_key
+        else f"Bearer {_distil_auth_token(auth_token)}"
+    )
     code, payload = request_and_validate(
         f"/licenses/{license_id}/actions/check-out",
         "get",
@@ -111,7 +134,7 @@ def create_new_user(
     last_name: str,
     email: str,
     password: str | None = None,
-    auth_token: str | None = None,
+    auth_token: models.Token | str | None = None,
 ) -> dict[str, typing.Any]:
     """Create a new user.
 
@@ -134,7 +157,6 @@ def create_new_user(
         these are referred to as "managed users", whose authentication is delegated to
         some other system.
     """
-
     attrs: dict[str, str] = {
         "firstName": first_name,
         "lastName": last_name,
@@ -146,7 +168,9 @@ def create_new_user(
     code, payload = request_and_validate(
         "/users",
         "post",
-        config.request_headers(authorization=f"Bearer {auth_token}"),
+        config.request_headers(
+            authorization=f"Bearer {_distil_auth_token(auth_token)}"
+        ),
         {
             "data": {
                 "type": "users",
@@ -197,7 +221,9 @@ def decode_license_file(license_file: pathlib.Path | str) -> dict[str, typing.An
 
 
 def list_license_entitlements(
-    lic_id: str, license_key: str | None = None
+    lic_id: str,
+    license_key: str | None = None,
+    auth_token: models.Token | str | None = None,
 ) -> list[dict[str, typing.Any]]:
     """List entitlements associated to a license.
 
@@ -205,6 +231,8 @@ def list_license_entitlements(
         lic_id: License ID of which to list the entitlements.
         license_key: Key used for authentication. If ``None``, the value from
             :attr:`.Config.auth_token` is used instead.
+        auth_token: Token with the authorization to create new users. If ``None``,
+            the value from :attr:`.Config.auth_token` is used.
     """
     license_request = request_and_validate(
         f"/licenses/{lic_id}/entitlements",
@@ -212,7 +240,7 @@ def list_license_entitlements(
         config.request_headers(
             authorization=f"License {license_key}"
             if license_key
-            else f"Bearer {config.auth_token}"
+            else f"Bearer {_distil_auth_token(auth_token)}"
         ),
     )
 
@@ -223,13 +251,17 @@ def list_license_entitlements(
     return payload["data"]
 
 
-def request_password_reset(user: models.User | str, deliver=True) -> None:
+def request_password_reset(
+    user: models.User | str, deliver=True, auth_token: models.Token | str | None = None
+) -> None:
     """Request a password reset for a given user.
 
     Args:
-        user: User for which to reset the password, or its email.
+        user: :class:`.User` for which to reset the password, or its email.
         deliver: Tell keygen to automatically email the user to
             allow them to reset the password.
+        auth_token: Token with the authorization to create new users. If ``None``,
+            the value from :attr:`.Config.auth_token` is used.
 
     Raises:
         KeygenError: If the request failed because of validation issues of the
@@ -244,7 +276,9 @@ def request_password_reset(user: models.User | str, deliver=True) -> None:
     code, payload = request_and_validate(
         "/passwords",
         "post",
-        config.request_headers(),
+        config.request_headers(
+            authorization=f"Bearer {_distil_auth_token(auth_token)}"
+        ),
         {"meta": {"email": user, "deliver": deliver}},
     )
 
@@ -318,12 +352,14 @@ def request_and_validate(
     return resp.status_code, validation_request
 
 
-def revoke_token(token: str):
+def revoke_token(token: str, auth_token: models.Token | str | None = None):
     """Invalidate a given token immediately."""
     code, payload = request_and_validate(
         "/tokens",
         "delete",
-        config.request_headers(authorization=f"Bearer {token}"),
+        config.request_headers(
+            authorization=f"Bearer {_distil_auth_token(auth_token)}"
+        ),
     )
 
     if code != 204:
