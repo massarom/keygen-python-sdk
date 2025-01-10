@@ -478,4 +478,7 @@ class User(CamelCasedModel):
         if code != 200:
             raise exceptions.KeygenAPIError("listing licenses failed.", resp=payload)
 
-        return [License.from_response(license_json) for license_json in payload["data"]]
+        return [
+            License.from_response({"data": license_json})
+            for license_json in payload["data"]
+        ]
