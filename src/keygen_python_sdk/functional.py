@@ -15,6 +15,8 @@ will default to what's defined in the :data:`.config` global object.
 
 .. autofunction:: decode_license_file
 
+.. autofunction:: get_user
+
 .. autofunction:: list_license_entitlements
 
 .. autofunction:: request_password_reset
@@ -249,6 +251,30 @@ def list_license_entitlements(
         raise exceptions.KeygenAPIError("invalid auth token", resp=payload)
 
     return payload["data"]
+
+
+def get_user(user_id: str, auth_token: models.Token | str | None = None) -> models.User:
+    """Retrieve a :class:`.User` object from the API.
+
+    Args:
+        user_id: The ID of the user to retrieve.
+        auth_token: Token with the authorization to create new users. If ``None``,
+            the value from :attr:`.Config.auth_token` is used.
+
+    Returns:
+        User: The user object.
+    """
+    code, payload = request_and_validate(
+        f"/users/{user_id}",
+        headers=config.request_headers(
+            authorization=f"Bearer {_distil_auth_token(auth_token)}"
+        ),
+    )
+
+    if "errors" in payload:
+        raise exceptions.KeygenAPIError("invalid auth token", resp=payload)
+
+    return models.User.from_response(payload)
 
 
 def request_password_reset(
