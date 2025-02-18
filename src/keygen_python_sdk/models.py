@@ -176,8 +176,7 @@ class Token(CamelCasedModel, alias_generator=to_camel):
         data = cls._validate_payload_for_model(json_data)
 
         return cls(
-            id=data["id"],
-            **data["attributes"],
+            id=data["id"], **data["attributes"], relationships=data["relationships"]
         )
 
 
